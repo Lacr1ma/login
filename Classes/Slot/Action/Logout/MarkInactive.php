@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace LMS\Flogin\Command;
+namespace LMS\Flogin\Slot\Action\Logout;
 
 /* * *************************************************************
  *
@@ -26,31 +26,20 @@ namespace LMS\Flogin\Command;
  *  This copyright notice MUST APPEAR in all copies of the script!
  * ************************************************************* */
 
-use LMS\Flogin\Domain\Model\Resets;
-use Symfony\Component\Console\{Input\InputInterface, Output\OutputInterface};
+use LMS\Flogin\Domain\Model\User;
 
 /**
  * @author Sergey Borulko <borulkosergey@icloud.com>
  */
-class ResetGarbageCollectorCommand extends \Symfony\Component\Console\Command\Command
+class MarkInactive
 {
     /**
-     * @noinspection PhpMissingParentCallCommonInspection
+     * @param \LMS\Flogin\Domain\Model\User $user
      */
-    protected function configure(): void
+    public function execute(User $user): void
     {
-        $this->setDescription('Clear all expired reset password links');
-    }
+        $user->resetOnlineTime();
 
-    /**
-     * System finds all expired <reset_links> and deletes them
-     *
-     * {@inheritDoc}
-     */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        Resets::repository()->findExpired()->map->delete();
-
-        return 0;
+        $user->save();
     }
 }
